@@ -2,35 +2,29 @@ package(default_visibility = ["//visibility:public"])
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
 load("@rules_proto//proto:defs.bzl", "proto_library")
-load("@rules_proto_grpc//cpp:defs.bzl", "cpp_proto_library")
-load("@rules_proto_grpc//cpp:defs.bzl", "cpp_grpc_library")
-
-proto_library(
-    name = "proto_common",
-    srcs = ["common.proto"],
-    deps = ["@com_google_protobuf//:descriptor_proto"],
-)
+load("@rules_proto_grpc//cpp:defs.bzl", "cpp_proto_compile")
+load("@rules_proto_grpc//cpp:defs.bzl", "cpp_grpc_compile")
 
 proto_library(
     name = "pb_common",
-    srcs = ["common.proto"],
+    srcs = [":common.proto"],
 )
 
 proto_library(
     name = "pb_greeter",
-    srcs = ["greeter.proto"],
+    srcs = [":greeter.proto"],
     deps = [":pb_common"],
 )
 
-cpp_proto_library(
+cpp_proto_compile(
     name = "pb_cpp_common",
-    protos = ["proto_common"],
+    protos = [":pb_common"],
 )
 
-cpp_grpc_library(
+cpp_grpc_compile(
     name = "pb_cpp_greeter",
-    protos = ["pb_greeter"],
-    deps = ["pb_cpp_common"],
+    protos = [":pb_greeter"],
+    deps = [":pb_cpp_common"],
 )
 
 cc_test(
@@ -39,7 +33,7 @@ cc_test(
     srcs = ["greeter_client_test.cc"],
     deps = [
         "@gtest//:gtest",
-        "clientlib",
+        ":clientlib",
     ]
 )
 
